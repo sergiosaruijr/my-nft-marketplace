@@ -6,8 +6,7 @@ async function bootstrap() {
   if (import.meta.env.VITE_ENABLE_MOCKS === "true") {
     try {
       const { worker } = await import("./mocks/browser");
-      // use 'warn' | 'bypass' | 'error' ou um callback personalizado
-      await worker.start({ onUnhandledFrame: "warn" });
+      await worker.start({ onUnhandledRequest: "warn" });
       if (import.meta.env.DEV) {
         document.addEventListener("visibilitychange", async () => {
           if (document.visibilityState !== "visible") return;
