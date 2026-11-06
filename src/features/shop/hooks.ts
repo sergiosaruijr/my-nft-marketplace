@@ -1,6 +1,13 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { api } from "../../lib/api";
-import type { Cart, Order, Provider, Wallet, WalletInput } from "../../types";
+import type {
+  Cart,
+  NFT,
+  Order,
+  Provider,
+  Wallet,
+  WalletInput,
+} from "../../types";
 
 export const cartKey = ["cart"] as const;
 export const walletsKey = ["wallets"] as const;
@@ -71,4 +78,13 @@ export const useOrder = (id: string) =>
     queryFn: ({ signal }) =>
       api.get<Order>(`/orders/${id}`, { signal }).then((r) => r.data),
     refetchInterval: (q) => (q.state.data?.status === "pending" ? 1000 : false), // até virar Socket.IO
+  });
+
+export const useNft = (id?: string) =>
+  useQuery({
+    queryKey: ["nft", id],
+    queryFn: ({ signal }) =>
+      api.get<NFT>(`/nfts/${id}`, { signal }).then((r) => r.data),
+    enabled: !!id,
+    staleTime: 5 * 60_000,
   });

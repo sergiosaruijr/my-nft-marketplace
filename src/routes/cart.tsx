@@ -12,6 +12,8 @@ import {
 import { eth, ethNum } from "../lib/format";
 import { parseApiError } from "../lib/errors";
 import type { CartLine } from "../../src/types";
+import SiteLayout from "../components/layout/SiteLayout";
+import CartDesktop from "../components/desktop/CartDesktop";
 
 const grad = "bg-gradient-to-r from-primary-light to-primary-dark";
 const couponBtn =
@@ -60,7 +62,7 @@ function Row({
   );
 }
 
-export default function CartPage() {
+function CartMobile() {
   const navigate = useNavigate();
   const { data: cart, isPending, isError, refetch } = useCart();
   const setQty = useSetQty();
@@ -143,7 +145,7 @@ export default function CartPage() {
                 </p>
               </div>
 
-              {/* coluna direita: quantidade em cima, lixeira alinhada ao preço */}
+              {/* direita*/}
               <div className="flex flex-col items-end justify-between">
                 <div
                   role="group"
@@ -268,12 +270,24 @@ export default function CartPage() {
           type="button"
           disabled={!cart?.items.length || busy}
           onClick={() => navigate({ to: "/payment" })}
-          //Type /payment is not asssignable to type ""/" | '/nft/$nftId' | "/login" | "/signup" | "." | ".."
           className={`mt-[30px] h-[60px] w-full rounded-[30px] ${grad} text-[16px] font-bold text-ink outline-none focus-visible:ring-2 focus-visible:ring-primary-light focus-visible:ring-offset-2 focus-visible:ring-offset-ink-soft disabled:opacity-50`}
         >
           Conectar e finalizar
         </button>
       </section>
     </div>
+  );
+}
+
+export default function CartRoute() {
+  return (
+    <SiteLayout footer="lg">
+      <div className="lg:hidden">
+        <CartMobile />
+      </div>
+      <div className="hidden lg:block">
+        <CartDesktop />
+      </div>
+    </SiteLayout>
   );
 }

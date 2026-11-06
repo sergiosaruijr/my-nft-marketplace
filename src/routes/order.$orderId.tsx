@@ -7,6 +7,9 @@ import { eth, fmtDate, providerLabel, shortAddr, tokenId } from "../lib/format";
 
 const cols = "grid grid-cols-[56px_1fr_44px_auto] items-center gap-x-2";
 
+const meta =
+  "border-primary/60 even:border-l even:pl-4 sm:border-l sm:pl-4 sm:first:border-l-0 sm:first:pl-0";
+
 function ThankYou() {
   return (
     <svg
@@ -102,7 +105,7 @@ export default function OrderPage() {
     );
 
   return (
-    <main className="mx-auto h-fit min-h-0 w-full max-w-[578px] flex-none bg-ink sm:min-h-dvh sm:py-10">
+    <main className="mx-auto h-fit min-h-0 w-full max-w-[578px] flex-none bg-ink sm:min-h-dvh sm:py-10 lg:pt-[166px]">
       <article
         aria-labelledby="thanks"
         className="relative overflow-hidden bg-surface-card"
@@ -125,26 +128,26 @@ export default function OrderPage() {
           </h1>
         </header>
 
-        <dl className="grid grid-cols-2 gap-y-4 border-b border-primary/60 px-5 py-4 text-[12px] leading-4 [&>div:nth-child(even)]:border-l [&>div:nth-child(even)]:border-primary/60 [&>div:nth-child(even)]:pl-4">
-          <div>
+        <dl className="grid grid-cols-2 gap-y-4 border-b border-primary/60 px-5 py-4 text-[12px] leading-4 sm:grid-cols-4 sm:px-11">
+          <div className={meta}>
             <dt className="font-bold text-text-secondary">ID da transação</dt>
             <dd className="text-text-muted">{shortAddr(o.txHash)}</dd>
           </div>
-          <div>
+          <div className={meta}>
             <dt className="text-text-secondary">Data</dt>
             <dd className="text-text-muted">{fmtDate(o.createdAt)}</dd>
           </div>
-          <div>
+          <div className={meta}>
             <dt className="text-text-secondary">Total</dt>
             <dd className="text-text-muted">{eth(o.total, 3)}</dd>
           </div>
-          <div>
+          <div className={meta}>
             <dt className="font-bold text-text-secondary">Carteira</dt>
             <dd className="text-text-muted">{providerLabel[o.provider]}</dd>
           </div>
         </dl>
 
-        <section className="px-5 pb-6 pt-5">
+        <section className="px-5 pb-6 pt-5 sm:px-11">
           <h2 className="text-[13px] font-bold text-foreground">
             Detalhes da transação
           </h2>
@@ -200,12 +203,11 @@ export default function OrderPage() {
             Transação confirmada na Ethereum. A propriedade foi transferida para
             sua carteira conectada e registrada na rede.
           </p>
-          {/* por enquanto: Home no lugar de "Ver no Etherscan" */}
           <Link
             to="/"
             className="mx-auto mt-5 block w-fit rounded bg-primary px-6 py-3 text-[14px] font-bold text-ink outline-none hover:bg-primary-light focus-visible:ring-2 focus-visible:ring-primary-light focus-visible:ring-offset-2 focus-visible:ring-offset-surface-card"
           >
-            Ir para a Home
+            Ver no Etherscan
           </Link>
         </section>
         <div aria-hidden className="h-2.5 bg-primary" />

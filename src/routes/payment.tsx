@@ -7,7 +7,8 @@ import { useCart, useCreateOrder, useWallets } from "../features/shop/hooks";
 import { eth, networkLabel, providerLabel, shortAddr } from "../lib/format";
 import { parseApiError } from "../lib/errors";
 import type { Provider } from "../types";
-// import { createFileRoute } from "@tanstack/react-router";
+import SiteLayout from "../components/layout/SiteLayout";
+import PaymentDesktop from "../components/desktop/PaymentDesktop";
 
 const PROVIDERS: Provider[] = ["walletconnect", "metamask", "coinbase"];
 const icon: Record<Provider, ReactNodeish> = {
@@ -17,7 +18,7 @@ const icon: Record<Provider, ReactNodeish> = {
 };
 type ReactNodeish = string | JSX.Element;
 
-export default function PaymentPage() {
+function PaymentMobile() {
   const navigate = useNavigate();
   const wallets = useWallets();
   const cart = useCart();
@@ -25,7 +26,6 @@ export default function PaymentPage() {
   const [walletId, setWalletId] = useState<string>();
   const [provider, setProvider] = useState<Provider>();
 
-  // ordem do Figma: Reserva (secundária) primeiro, depois Principal
   const list = [...(wallets.data ?? [])].sort((a, b) =>
     a.role === b.role ? 0 : a.role === "secondary" ? -1 : 1,
   );
@@ -35,7 +35,6 @@ export default function PaymentPage() {
     ? "secondary"
     : "principal";
 
-  // uma chave por tentativa: cliques repetidos e retries reaproveitam o mesmo pedido
   const key = useMemo(
     () => crypto.randomUUID(),
     [selected?.id, chosen, cart.data?.total],
@@ -51,7 +50,7 @@ export default function PaymentPage() {
       });
       navigate({ to: "/order/$orderId", params: { orderId: order.id } });
     } catch {
-      /* erro exibido abaixo */
+      /* erro aqui*/
     }
   };
 
@@ -203,5 +202,18 @@ export default function PaymentPage() {
         </div>
       </form>
     </main>
+  );
+}
+
+export default function PaymentRoute() {
+  return (
+    <SiteLayout footer="lg">
+      <div className="lg:hidden">
+        <PaymentMobile />
+      </div>
+      <div className="hidden lg:block">
+        <PaymentDesktop />
+      </div>
+    </SiteLayout>
   );
 }

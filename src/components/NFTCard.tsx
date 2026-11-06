@@ -41,7 +41,7 @@ export function NFTCard({ nft, rare }: { nft: NFT; rare?: boolean }) {
         aria-label={`Favoritar ${nft.name}`}
         className="mt-2 w-8 h-8 flex items-center justify-center rounded-full bg-[rgba(20,13,10,0.7)]"
         onClick={(e) => {
-          e.stopPropagation(); /* tratar favoritos */
+          e.stopPropagation(); /* arrumar favoritos */
         }}
       >
         <Heart size={16} className="text-[#CFB28C]" />

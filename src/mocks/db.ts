@@ -37,7 +37,7 @@ async function seed(): Promise<DB> {
       { id: "u2", username: "bruno", email: "bruno@kurio.com", passwordHash },
     ],
     sessions: {},
-    // ana já vem com o carrinho do Figma; bruno começa vazio (estado vazio)
+
     carts: {
       u1: [
         { nftId: "1", qty: 1 },
@@ -94,45 +94,3 @@ export async function resetDb() {
   cache = await seed();
   saveDb();
 }
-
-// import type { User } from "../types";
-
-// type StoredUser = User & { passwordHash: string };
-// type DB = { users: StoredUser[]; sessions: Record<string, string> };
-// const KEY = "kurio.mock.db";
-// let cache: DB | null = null;
-
-// export async function sha256(s: string) {
-//   const buf = await crypto.subtle.digest(
-//     "SHA-256",
-//     new TextEncoder().encode(s),
-//   );
-//   return [...new Uint8Array(buf)]
-//     .map((b) => b.toString(16).padStart(2, "0"))
-//     .join("");
-// }
-
-// async function seed(): Promise<DB> {
-//   const passwordHash = await sha256("kurio1234"); // senhas nunca em claro
-//   return {
-//     users: [
-//       { id: "u1", username: "ana", email: "ana@kurio.com", passwordHash },
-//       { id: "u2", username: "bruno", email: "bruno@kurio.com", passwordHash },
-//     ],
-//     sessions: {},
-//   };
-// }
-
-// export async function getDb() {
-//   if (cache) return cache;
-//   const raw = localStorage.getItem(KEY);
-//   cache = raw ? (JSON.parse(raw) as DB) : await seed();
-//   return cache;
-// }
-// export const saveDb = () =>
-//   cache && localStorage.setItem(KEY, JSON.stringify(cache));
-// export async function resetDb() {
-//   cache = await seed();
-//   saveDb();
-// }
-// export type { StoredUser };

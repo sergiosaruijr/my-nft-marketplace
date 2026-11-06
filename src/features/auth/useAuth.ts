@@ -13,30 +13,12 @@ function useAuthMutation<T>(path: string) {
     mutationFn: (body: T) =>
       api.post<AuthResponse>(path, body).then((r) => r.data),
     onSuccess: ({ token, user }) => {
-      qc.clear(); // nunca herdar cache de outro usuário
+      qc.clear();
       setToken(token);
       qc.setQueryData(sessionKey, user);
     },
   });
 }
-
-// export const useLogin = () => useAuthMutation<LoginBody>("/auth/login");
-// export const useSignup = () => useAuthMutation<SignupBody>("/auth/signup");
-
-// export const useLogin = () => useAuthMutation<LoginBody>("/api/auth/login");
-// //
-// export const useSignup = () => useAuthMutation<SignupBody>("/api/auth/signup");
-
-// export function useLogout() {
-//   const qc = useQueryClient();
-//   return useMutation({
-//     mutationFn: () => api.post("/auth/logout").catch(() => undefined),
-//     onSettled: () => {
-//       clearToken();
-//       qc.clear();
-//     },
-//   });
-// }
 
 export const useLogin = () => useAuthMutation<LoginBody>("/auth/login");
 export const useSignup = () => useAuthMutation<SignupBody>("/auth/signup");
@@ -45,7 +27,6 @@ export function useLogout() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: () => api.post("/auth/logout").catch(() => undefined),
-    //                              ↑ também sem /api
     onSettled: () => {
       clearToken();
       qc.clear();

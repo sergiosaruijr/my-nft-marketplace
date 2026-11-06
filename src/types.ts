@@ -12,9 +12,16 @@ export type NFT = {
   attributes?: string[];
   rating?: number;
   reviews?: number;
+  createdAt?: string;
 };
 
-export type User = { id: string; username: string; email: string };
+// export type User = { id: string; username: string; email: string };
+export type User = {
+  id: string;
+  username: string;
+  email: string;
+  avatarUrl?: string | null;
+};
 export type AuthResponse = { token: string; user: User };
 export type ApiError = {
   error: string;

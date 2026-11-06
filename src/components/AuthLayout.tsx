@@ -38,35 +38,3 @@ export default function AuthLayout({
     </main>
   );
 }
-
-// import type { ReactNode } from "react";
-
-// export default function AuthLayout({
-//   title,
-//   children,
-//   footer,
-// }: {
-//   title: string;
-//   children: ReactNode;
-//   footer: ReactNode;
-// }) {
-//   return (
-//     <main className="min-h-dvh bg-ink px-6 pb-8">
-//       <div className="mx-auto flex min-h-dvh w-full max-w-[414px] flex-col">
-//         <p
-//           aria-hidden
-//           className="pt-28 text-center text-[32px] font-bold tracking-[0.15em] text-foreground"
-//         >
-//           KURIO
-//         </p>
-//         <h1 className="mt-24 mb-8 text-center text-lg font-bold text-foreground">
-//           {title}
-//         </h1>
-//         {children}
-//         <p className="mt-auto pt-10 text-center text-sm text-text-secondary">
-//           {footer}
-//         </p>
-//       </div>
-//     </main>
-//   );
-// }

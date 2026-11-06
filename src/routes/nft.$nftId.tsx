@@ -15,8 +15,10 @@ import type { NFT } from "../types";
 import { eth } from "../lib/format";
 import { useAddToCart } from "../features/shop/hooks";
 import { parseApiError } from "../lib/errors";
+import SiteLayout from "../components/layout/SiteLayout";
+import NFTDetailDesktop from "../components/desktop/NFTDetailDesktop";
 
-export default function NFTDetail() {
+function NFTDetailMobile() {
   const params = useParams({ strict: false }) as { nftId?: string };
   const nftId = params.nftId;
   const navigate = useNavigate();
@@ -24,7 +26,7 @@ export default function NFTDetail() {
   const [quantity, setQuantity] = useState(1);
   const [favorite, setFavorite] = useState(false);
 
-  const add = useAddToCart(); // ✅
+  const add = useAddToCart();
 
   const { data: nft, isLoading } = useQuery<NFT | null>({
     queryKey: ["nft", nftId],
@@ -55,9 +57,7 @@ export default function NFTDetail() {
 
   return (
     <div className="min-h-dvh bg-gradient-to-b from-[#2B1912] via-[#1B100C] to-[#140D0A] text-[#F5F1EB] overflow-x-hidden">
-      {/* ÁREA DA IMAGEM */}
       <div className="relative px-7 pt-[66px]">
-        {/* Botão voltar */}
         <button
           aria-label="Voltar"
           onClick={() => navigate({ to: "/" })}
@@ -66,7 +66,6 @@ export default function NFTDetail() {
           <ChevronLeft size={21} className="text-[#CFB28C]" />
         </button>
 
-        {/* Favorito */}
         <button
           aria-label="Favoritar"
           onClick={() => setFavorite(!favorite)}
@@ -79,7 +78,6 @@ export default function NFTDetail() {
           />
         </button>
 
-        {/* Imagem do NFT */}
         <div className="w-full aspect-square rounded-[24px] overflow-hidden bg-[#F0E6CC]">
           {nft.image ? (
             <img
@@ -91,9 +89,7 @@ export default function NFTDetail() {
         </div>
       </div>
 
-      {/* PAINEL DE INFORMAÇÕES */}
       <div className="relative z-10 -mt-7 rounded-t-[28px] bg-[#241612] px-6 pt-8 pb-6">
-        {/* Nome e avaliação */}
         <div className="flex items-center justify-between gap-2">
           <h1 className="text-xl font-bold text-[#F5F1EB]">{nft.name}</h1>
 
@@ -104,12 +100,10 @@ export default function NFTDetail() {
           </div>
         </div>
 
-        {/* Descrição */}
         <p className="text-[14px] leading-[24px] text-[#CFB28C] mt-3">
           {nft.description ?? "Descrição indisponível."}
         </p>
 
-        {/* Edição */}
         <div className="mt-3">
           <p className="text-sm font-bold text-[#F5F1EB]">Edição:</p>
           <div className="flex flex-wrap gap-2 mt-1">
@@ -119,30 +113,25 @@ export default function NFTDetail() {
           </div>
         </div>
 
-        {/* ID */}
         <p className="mt-4 text-sm text-[#B99561]">
           ID do token: {nft.tokenId}
         </p>
 
-        {/* Coleção */}
         <p className="mt-3 text-sm text-[#B99561]">Coleção: {nft.collection}</p>
 
-        {/* Atributos */}
         <p className="mt-3 text-sm text-[#B99561]">
           Atributos: {(nft.attributes ?? []).join(", ")}
         </p>
       </div>
 
-      {/* BARRA FIXA DE COMPRA */}
+      {/* barra compra */}
       <div className="fixed bottom-0 left-0 right-0 z-30 rounded-t-[28px] bg-[#241612] px-6 pt-5 pb-8 shadow-[0_-10px_30px_rgba(0,0,0,0.25)]">
-        {/* Erro do add to cart */}
         {add.isError && (
           <p role="alert" className="mb-3 text-xs text-red-400 text-center">
             {parseApiError(add.error).message}
           </p>
         )}
 
-        {/* Quantidade e preço */}
         <div className="flex items-center justify-between mb-5">
           <div className="flex items-center gap-3">
             <span className="text-sm text-[#CFB28C]">Qtd.</span>
@@ -171,9 +160,7 @@ export default function NFTDetail() {
           </span>
         </div>
 
-        {/* Botões */}
         <div className="flex items-center gap-3">
-          {/* Comprar direto — vai pro pagamento */}
           <button
             type="button"
             disabled={add.isPending}
@@ -182,7 +169,7 @@ export default function NFTDetail() {
                 await add.mutateAsync({ nftId: nft.id, qty: quantity });
                 navigate({ to: "/payment" });
               } catch {
-                /* erro exibido acima */
+                /* erro aqui */
               }
             }}
             className="flex-1 h-[60px] rounded-full bg-gradient-to-r from-[#DD9A5F] to-[#C47B3E] text-[#140D0A] font-bold text-sm disabled:opacity-60"
@@ -190,7 +177,6 @@ export default function NFTDetail() {
             {add.isPending ? "Adicionando…" : "Comprar NFT"}
           </button>
 
-          {/* Adicionar ao carrinho */}
           <button
             aria-label="Adicionar ao carrinho"
             type="button"
@@ -210,8 +196,20 @@ export default function NFTDetail() {
         </div>
       </div>
 
-      {/* Espaço para a barra fixa */}
       <div className="h-[175px]" />
     </div>
+  );
+}
+
+export default function NFTRoute() {
+  return (
+    <SiteLayout footer="lg">
+      <div className="lg:hidden">
+        <NFTDetailMobile />
+      </div>
+      <div className="hidden lg:block">
+        <NFTDetailDesktop />
+      </div>
+    </SiteLayout>
   );
 }

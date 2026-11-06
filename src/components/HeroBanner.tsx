@@ -1,7 +1,6 @@
 function HeroBanner() {
   return (
     <div className="relative mt-4 overflow-hidden rounded-[28px] h-[190px] bg-[#2F1D15]">
-      {/* arrumar círculo decorativo */}
       <div
         className="absolute w-[240px] h-[240px] rounded-full"
         style={{
@@ -11,7 +10,7 @@ function HeroBanner() {
         }}
       />
 
-      {/* texto esquerdo */}
+      {/* esquerda */}
       <div className="absolute left-6 top-0 bottom-0 flex flex-col justify-center max-w-[190px]">
         <p className="text-xs font-normal text-foreground">Bem-vindo à Kurio</p>
         <h2 className="text-lg font-bold text-foreground leading-[24px] mt-2 uppercase">
@@ -27,7 +26,6 @@ function HeroBanner() {
         </button>
       </div>
 
-      {/* imagem*/}
       <div className="absolute right-4 top-3">
         <div className="w-[110px] h-[128px] rounded-[20px]  overflow-hidden">
           <img

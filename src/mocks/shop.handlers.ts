@@ -36,7 +36,7 @@ const err = (
   extra: object = {},
 ) => HttpResponse.json({ error, message, ...extra }, { status });
 
-const COUPONS: Record<string, string> = { KURIO5: "0.50" }; // desconto fixo em ETH
+const COUPONS: Record<string, string> = { KURIO5: "0.50" };
 const EXPIRED = ["LANCAMENTO"];
 
 function buildCart(db: DB, uid: string): Cart {
@@ -71,7 +71,6 @@ function buildCart(db: DB, uid: string): Cart {
 const publicOrder = ({ userId: _, ...o }: StoredOrder): Order => o;
 
 export const shopHandlers = [
-  // ---------- carrinho ----------
   http.get(
     "*/api/cart",
     authed(({ uid, db }) => HttpResponse.json(buildCart(db, uid))),
@@ -161,7 +160,6 @@ export const shopHandlers = [
     }),
   ),
 
-  // ---------- carteiras ----------
   http.get(
     "*/api/wallets",
     authed(({ uid, db }) => HttpResponse.json(db.wallets[uid] ?? [])),
@@ -206,7 +204,6 @@ export const shopHandlers = [
     }),
   ),
 
-  // ---------- pedidos ----------
   http.post(
     "*/api/orders",
     authed(async ({ uid, db, request }) => {
@@ -226,7 +223,7 @@ export const shopHandlers = [
             "idempotency_conflict",
             "Chave já usada com outro conteúdo.",
           );
-        return HttpResponse.json(publicOrder(db.orders[prev.orderId])); // mesma tentativa → mesmo pedido
+        return HttpResponse.json(publicOrder(db.orders[prev.orderId]));
       }
       const wallet = db.wallets[uid]?.find((w) => w.id === body.walletId);
       if (!wallet)
@@ -279,7 +276,7 @@ export const shopHandlers = [
       ) {
         o.status = "confirmed";
         o.version++;
-        // remove do carrinho só o que foi comprado
+
         db.carts[uid] = (db.carts[uid] ?? [])
           .map((l) => {
             const b = o.items.find((i) => i.nftId === l.nftId);

@@ -1,25 +1,34 @@
+import { useSearch } from "@tanstack/react-router";
 import { NFTCard } from "./NFTCard";
+import Pagination from "./Pagination";
 import { NFTS } from "../data/nfts";
+import { pageCount, pageOf, sortNfts } from "../lib/catalog";
 
 function NFTGrid() {
-  const left = [NFTS[0], NFTS[2]];
-  const right = [NFTS[1], NFTS[3]];
+  const { tab, page } = useSearch({ from: "/" });
+  const sorted = sortNfts(NFTS, tab);
+  const pages = pageCount(sorted.length);
+  const current = Math.min(page ?? 1, pages);
+  const items = pageOf(sorted, current);
+
+  const left = items.filter((_, i) => i % 2 === 0);
+  const right = items.filter((_, i) => i % 2 === 1);
 
   return (
-    <div className="flex gap-4 mt-5 pb-32">
-      {/* esquerda */}
-      <div className="flex flex-col gap-5 flex-1">
-        {left.map((nft, i) => (
-          <NFTCard key={nft.id} nft={nft} rare={i === 1} />
-        ))}
+    <div className="pb-32">
+      <div className="flex gap-4 mt-5">
+        <div className="flex flex-col gap-5 flex-1">
+          {left.map((nft) => (
+            <NFTCard key={nft.id} nft={nft} rare={nft.rare} />
+          ))}
+        </div>
+        <div className="flex flex-col gap-5 flex-1">
+          {right.map((nft) => (
+            <NFTCard key={nft.id} nft={nft} rare={nft.rare} />
+          ))}
+        </div>
       </div>
-
-      {/* direita */}
-      <div className="flex flex-col gap-5 flex-1">
-        {right.map((nft) => (
-          <NFTCard key={nft.id} nft={nft} />
-        ))}
-      </div>
+      <Pagination page={current} pages={pages} tab={tab} />
     </div>
   );
 }

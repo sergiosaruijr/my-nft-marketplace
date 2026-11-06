@@ -1,10 +1,3 @@
-// import axios from "axios";
-
-// export const api = axios.create({
-//   baseURL: "/api", // MSW atende /api/... em dev
-//   timeout: 10_000,
-// });
-
 import axios from "axios";
 import { getToken, SESSION_EXPIRED } from "./session";
 
