@@ -13,7 +13,11 @@ const on =
 export default function SiteHeader() {
   const path = useRouterState({ select: (s) => s.location.pathname });
   const { data: cart } = useCart();
-  const count = cart?.items?.reduce((n, l) => n + l.qty, 0) ?? 0;
+  //   const count = cart?.items?.reduce((n, l) => n + l.qty, 0) ?? 0;
+  const count = (cart?.items ?? []).reduce<number>(
+    (acc, item) => acc + (item?.qty ?? 0),
+    0,
+  );
 
   return (
     <header className="hidden lg:block">
@@ -63,7 +67,8 @@ export default function SiteHeader() {
             </Link>
             <Link
               to="/cart"
-              aria-label={`Carrinho, ${count} item(ns)`}
+              //   aria-label={`Carrinho, ${count} item(ns)`}
+              aria-label={`Carrinho, ${count} item${count === 1 ? "" : "s"}`}
               className="relative text-foreground"
             >
               <ShoppingCart size={24} />

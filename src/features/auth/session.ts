@@ -4,7 +4,7 @@ import { clearToken, getToken } from "../../lib/session";
 import type { User } from "../../types";
 
 export const sessionKey = ["session"] as const;
-const fetchSession = () =>
+export const fetchSession = () =>
   api.get<{ user: User }>("/auth/session").then((r) => r.data.user);
 
 export async function getSession(qc: QueryClient): Promise<User | null> {

@@ -9,10 +9,10 @@ export function useAuthGate() {
   const { data: user } = useQuery<User | null>({
     queryKey: sessionKey,
     queryFn: skipToken,
+    enabled: false,
   });
   const isLoggedIn = !!user;
 
-  // logado: roda a ação; visitante: abre o modal de login (Verificar se faz sentido abrir modal ou se é pra deixar livre, mas so permitir que compre logado)
   const guard = (action: () => void) => () =>
     isLoggedIn ? action() : openAuthModal(router);
 
