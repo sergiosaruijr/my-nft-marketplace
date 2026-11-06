@@ -24,46 +24,82 @@
 
 // bootstrap();
 
-// src/main.tsx
+// // src/main.tsx
+// import { createRoot } from "react-dom/client";
+// import App from "./App";
+// import "./index.css";
+
+// async function bootstrap() {
+//   // só tenta iniciar o worker se a flag estiver ativa
+//   if (import.meta.env.VITE_ENABLE_MOCKS === "true") {
+//     try {
+//       // carregamento dinâmico evita bundlar o worker no SSR/build
+//       const { worker } = await import("./mocks/browser");
+
+//       // Forçar explicitamente a URL do service worker (garante que /mockServiceWorker.js seja usada)
+//       await worker.start({
+//         serviceWorker: {
+//           // O arquivo gerado pelo `msw init public/` deve ficar em /mockServiceWorker.js
+//           url: "/mockServiceWorker.js",
+//         },
+//         onUnhandledRequest: "warn", // mantém o comportamento que você já tinha
+//         quiet: true, // evita muitos logs em prod
+//       });
+
+//       // sinal simples para debugging (opcional)
+//       // eslint-disable-next-line no-console
+//       console.info("[msw] worker started (client)");
+//       // marca global para checagem rápida
+//       (window as any).__MSW__ = true;
+
+//       if (import.meta.env.DEV) {
+//         document.addEventListener("visibilitychange", async () => {
+//           if (document.visibilityState !== "visible") return;
+//           if (!navigator.serviceWorker.controller) location.reload();
+//         });
+//       }
+//     } catch (err) {
+//       // eslint-disable-next-line no-console
+//       console.error("[msw] failed to start worker", err);
+//     }
+//   }
+
+//   createRoot(document.getElementById("root")!).render(<App />);
+// }
+
+// bootstrap();
+
 import { createRoot } from "react-dom/client";
 import App from "./App";
 import "./index.css";
 
+const MOCKS_ON = import.meta.env.VITE_ENABLE_MOCKS !== "false";
+
+async function startMocks() {
+  const { worker } = await import("./mocks/browser");
+  await worker.start({ onUnhandledRequest: "bypass" });
+
+  if (new URLSearchParams(location.search).has("reset")) {
+    const { resetDb } = await import("./mocks/db");
+    await resetDb();
+    ["kurio.token", "kurio.guest"].forEach((k) => localStorage.removeItem(k));
+    sessionStorage.removeItem("kurio.scenario");
+    history.replaceState(null, "", location.pathname);
+  }
+  console.info("[kurio] mocks ativos");
+}
+
 async function bootstrap() {
-  // só tenta iniciar o worker se a flag estiver ativa
-  if (import.meta.env.VITE_ENABLE_MOCKS === "true") {
+  if (MOCKS_ON) {
     try {
-      // carregamento dinâmico evita bundlar o worker no SSR/build
-      const { worker } = await import("./mocks/browser");
-
-      // Forçar explicitamente a URL do service worker (garante que /mockServiceWorker.js seja usada)
-      await worker.start({
-        serviceWorker: {
-          // O arquivo gerado pelo `msw init public/` deve ficar em /mockServiceWorker.js
-          url: "/mockServiceWorker.js",
-        },
-        onUnhandledRequest: "warn", // mantém o comportamento que você já tinha
-        quiet: true, // evita muitos logs em prod
-      });
-
-      // sinal simples para debugging (opcional)
-      // eslint-disable-next-line no-console
-      console.info("[msw] worker started (client)");
-      // marca global para checagem rápida
-      (window as any).__MSW__ = true;
-
-      if (import.meta.env.DEV) {
-        document.addEventListener("visibilitychange", async () => {
-          if (document.visibilityState !== "visible") return;
-          if (!navigator.serviceWorker.controller) location.reload();
-        });
-      }
-    } catch (err) {
-      // eslint-disable-next-line no-console
-      console.error("[msw] failed to start worker", err);
+      await startMocks();
+    } catch (e) {
+      console.error(
+        "[kurio] os mocks não iniciaram, a API simulada não vai responder:",
+        e,
+      );
     }
   }
-
   createRoot(document.getElementById("root")!).render(<App />);
 }
 
