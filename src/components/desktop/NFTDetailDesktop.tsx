@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate, useParams } from "@tanstack/react-router";
-import { Heart, Mail, Minus, Plus, Search, Star } from "lucide-react";
+import { Mail, Minus, Plus, Search, Star } from "lucide-react";
+import FavoriteButton from "../../features/favorites/FavoriteButton";
 import Breadcrumb from "../layout/Breadcrumb";
 import NFTCarousel from "./NFTCarousel";
 import ImageBox from "./ImageBox";
@@ -19,7 +20,6 @@ export default function NFTDetailDesktop() {
   const { data: nft, isPending, isError } = useNft(nftId);
   const add = useAddToCart();
   const [qty, setQty] = useState(1);
-  const [fav, setFav] = useState(false);
   const [tab, setTab] = useState<"details" | "reviews">("details");
   const [thumb, setThumb] = useState(0);
 
@@ -212,15 +212,12 @@ export default function NFTDetailDesktop() {
               >
                 {add.isPending ? "Adicionando…" : "Comprar"}
               </button>
-              <button
-                type="button"
-                aria-pressed={fav}
-                onClick={() => setFav((f) => !f)}
-                className="flex h-10 items-center gap-2 border border-primary px-4 text-[14px] text-primary outline-none focus-visible:ring-2 focus-visible:ring-primary-light"
+              <FavoriteButton
+                nft={nft}
+                className="flex h-10 items-center gap-2 border border-primary px-4 text-[14px] text-primary"
               >
-                <Heart size={18} fill={fav ? "currentColor" : "none"} />{" "}
                 Favoritar
-              </button>
+              </FavoriteButton>
             </div>
           </div>
           {add.isError && (

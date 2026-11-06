@@ -25,3 +25,13 @@ export const SESSION_EXPIRED = "kurio:session_expired";
 
 export const safeRedirect = (p?: string) =>
   p && p.startsWith("/") && !p.startsWith("//") ? p : "/";
+
+export const getGuestId = () => {
+  let id = localStorage.getItem(TOKEN_KEY);
+  if (!id) {
+    id = crypto.randomUUID();
+    localStorage.setItem(TOKEN_KEY, id);
+  }
+  return id;
+};
+export const clearGuestId = () => localStorage.removeItem(TOKEN_KEY);
