@@ -55,15 +55,17 @@
   --radius-device: 40px;
 }
 
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
 body {
   background-color: #140d0a;
   color: #f5f1eb;
   font-family: "Roboto Mono", monospace;
   -webkit-font-smoothing: antialiased;
+}
+
+input:-webkit-autofill,
+input:-webkit-autofill:focus {
+  -webkit-box-shadow: 0 0 0 1000px #140d0a inset;
+  -webkit-text-fill-color: #f5f1eb;
+  caret-color: #f5f1eb;
+  transition: background-color 9999s ease-in-out 0s;
 }
