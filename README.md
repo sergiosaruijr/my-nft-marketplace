@@ -3,24 +3,24 @@
 Desafio Frontend: marketplace de NFTs em React + TypeScript, com API, autenticação, carteiras e pagamentos **simulados** (MSW).
 
 - **Aplicação publicada:** https://my-nft-marketplace-beige.vercel.app/
-- **Repositório:** `<link do repositório>`
+- **Repositório:** `<https://github.com/sergiosaruijr/my-nft-marketplace>`
 - **Commit publicado:** `<hash do commit que está na Vercel>`
 - **Arquitetura, contratos e decisões:** [ARCHITECTURE.md](./ARCHITECTURE.md)
 
 ## Stack
 
-| Responsabilidade | Tecnologia |
-|---|---|
-| Interface / Linguagem | React + TypeScript (Vite) |
-| Roteamento | TanStack Router |
-| Estado remoto | TanStack Query |
-| Cliente HTTP | Axios |
-| Tempo real | Socket.IO (`socket.io-client`) |
-| Estilização | Tailwind CSS v4 |
-| Componentes | shadcn/ui |
-| Mocking | MSW (+ `@mswjs/socket.io-binding`) |
-| Testes E2E e regressão visual | Playwright |
-| Performance e qualidade | Lighthouse |
+| Responsabilidade              | Tecnologia                         |
+| ----------------------------- | ---------------------------------- |
+| Interface / Linguagem         | React + TypeScript (Vite)          |
+| Roteamento                    | TanStack Router                    |
+| Estado remoto                 | TanStack Query                     |
+| Cliente HTTP                  | Axios                              |
+| Tempo real                    | Socket.IO (`socket.io-client`)     |
+| Estilização                   | Tailwind CSS v4                    |
+| Componentes                   | shadcn/ui                          |
+| Mocking                       | MSW (+ `@mswjs/socket.io-binding`) |
+| Testes E2E e regressão visual | Playwright                         |
+| Performance e qualidade       | Lighthouse                         |
 
 ## Setup
 
@@ -37,18 +37,18 @@ Abra http://localhost:5173. Não há backend: toda a API roda no navegador via M
 
 ## Variáveis de ambiente
 
-| Variável | Padrão | Descrição |
-|---|---|---|
+| Variável            | Padrão | Descrição                                                                                                                  |
+| ------------------- | ------ | -------------------------------------------------------------------------------------------------------------------------- |
 | `VITE_ENABLE_MOCKS` | ligado | Ativa o MSW (API e Socket.IO simulados). Use `false` para desligar. Sem backend real, o app só funciona com mocks ligados. |
 
 Veja `.env.example`. Nenhuma variável é obrigatória para rodar ou publicar.
 
 ## Credenciais fictícias
 
-| Usuário | E-mail | Senha | Estado inicial |
-|---|---|---|---|
-| ana | `ana@kurio.com` | `kurio1234` | carrinho com 4 itens, carteiras Principal e Reserva, 1 favorito |
-| bruno | `bruno@kurio.com` | `kurio1234` | tudo vazio (sem carteiras, carrinho ou favoritos) |
+| Usuário | E-mail            | Senha       | Estado inicial                                                  |
+| ------- | ----------------- | ----------- | --------------------------------------------------------------- |
+| ana     | `ana@kurio.com`   | `kurio1234` | carrinho com 4 itens, carteiras Principal e Reserva, 1 favorito |
+| bruno   | `bruno@kurio.com` | `kurio1234` | tudo vazio (sem carteiras, carrinho ou favoritos)               |
 
 O cadastro cria novos usuários (as senhas ficam como hash SHA-256 no banco simulado, nunca em texto claro).
 
@@ -60,31 +60,31 @@ Cupons: `KURIO5` (desconto de 0.50 ETH), `LANCAMENTO` (expirado). Qualquer outro
 - **Reset:** abra `/?reset=1`. Restaura usuários, carrinhos, carteiras, favoritos, pedidos, sessão, id de visitante e cenário para o estado inicial conhecido.
 - **Cenários:** acrescente `?scenario=<nome>` a qualquer URL. O cenário vale para a aba (sessionStorage) até você abrir `?scenario=default`. As latências são determinísticas (mesma sequência a cada carga).
 
-| Cenário | O que simula |
-|---|---|
-| `default` | latência 150–300 ms, tudo funcionando |
-| `slow` | latência 1,8–2,5 s (skeletons e estados de carregamento) |
-| `variable` | latência 0,1–2,2 s (respostas fora de ordem) |
-| `offline` | falha de conexão em todas as chamadas |
-| `server500` | HTTP 500 em todas as chamadas (exceto `/auth`) |
-| `empty` | catálogo vazio |
-| `expired` | sessão expirada: toda chamada autenticada devolve 401 |
-| `order-timeout` | o pedido é criado, mas a resposta nunca chega (timeout de 10 s) |
-| `payment-rejected` | o pagamento é recusado (pedido termina como `rejected`) |
-| `favorites-fail` | falha ao favoritar/desfavoritar (HTTP 500) |
+| Cenário            | O que simula                                                    |
+| ------------------ | --------------------------------------------------------------- |
+| `default`          | latência 150–300 ms, tudo funcionando                           |
+| `slow`             | latência 1,8–2,5 s (skeletons e estados de carregamento)        |
+| `variable`         | latência 0,1–2,2 s (respostas fora de ordem)                    |
+| `offline`          | falha de conexão em todas as chamadas                           |
+| `server500`        | HTTP 500 em todas as chamadas (exceto `/auth`)                  |
+| `empty`            | catálogo vazio                                                  |
+| `expired`          | sessão expirada: toda chamada autenticada devolve 401           |
+| `order-timeout`    | o pedido é criado, mas a resposta nunca chega (timeout de 10 s) |
+| `payment-rejected` | o pagamento é recusado (pedido termina como `rejected`)         |
+| `favorites-fail`   | falha ao favoritar/desfavoritar (HTTP 500)                      |
 
 ## Comandos
 
-| Comando | O que faz |
-|---|---|
-| `npm run dev` | desenvolvimento com mocks (Vite) |
-| `npm run build` | verificação de tipos + build de produção (inclui os mocks, é o build da demonstração) |
-| `npm run preview` | serve o build em http://localhost:4173 |
-| `npm run typecheck` | verificação de tipos (`tsc -b`) |
-| `npm run lint` | ESLint |
-| `npm run test:e2e` | testes Playwright (sobe build + preview sozinho) |
-| `npm run test:e2e:report` | abre o relatório HTML do Playwright |
-| `npm run lighthouse` | auditoria Lighthouse (precisa de `npm run build && npm run preview` rodando) |
+| Comando                   | O que faz                                                                             |
+| ------------------------- | ------------------------------------------------------------------------------------- |
+| `npm run dev`             | desenvolvimento com mocks (Vite)                                                      |
+| `npm run build`           | verificação de tipos + build de produção (inclui os mocks, é o build da demonstração) |
+| `npm run preview`         | serve o build em http://localhost:4173                                                |
+| `npm run typecheck`       | verificação de tipos (`tsc -b`)                                                       |
+| `npm run lint`            | ESLint                                                                                |
+| `npm run test:e2e`        | testes Playwright (sobe build + preview sozinho)                                      |
+| `npm run test:e2e:report` | abre o relatório HTML do Playwright                                                   |
+| `npm run lighthouse`      | auditoria Lighthouse (precisa de `npm run build && npm run preview` rodando)          |
 
 Na primeira vez, instale o navegador do Playwright: `npx playwright install chromium`.
 
@@ -108,7 +108,7 @@ Na primeira vez, instale o navegador do Playwright: `npx playwright install chro
 - Framework: Vite · build `npm run build` · saída `dist`.
 - `vercel.json` reescreve qualquer rota para `index.html` (acesso direto e refresh funcionam).
 - Não há variáveis obrigatórias: os mocks vêm ligados por padrão.
-- Em *Settings → Deployment Protection*, a proteção deve estar desligada para a produção, para a URL abrir sem login da Vercel.
+- Em _Settings → Deployment Protection_, a proteção deve estar desligada para a produção, para a URL abrir sem login da Vercel.
 
 ## Estrutura
 

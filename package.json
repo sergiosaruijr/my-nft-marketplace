@@ -6,10 +6,12 @@
   "scripts": {
     "dev": "vite",
     "lint": "eslint .",
-    "build": "tsc -b && vite build",
-    "preview": "vite preview",
     "mocks": "vite build --mode mocks",
-    "typecheck": "tsc -p tsconfig.app.json --noEmit",
+    "dev:mocks": "cross-env VITE_ENABLE_MOCKS=true vite",
+    "prepare:mocks": "msw init public/ --save",
+    "build": "npm run prepare:mocks && vite build",
+    "preview": "vite preview",
+    "typecheck": "tsc --noEmit",
     "test:e2e": "playwright test",
     "lighthouse": "node scripts/lighthouse.mjs"
   },
