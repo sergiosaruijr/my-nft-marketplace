@@ -1,15 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate, useParams } from "@tanstack/react-router";
-import {
-  Heart,
-  Linkedin,
-  Mail,
-  Minus,
-  Plus,
-  Search,
-  Star,
-  Twitter,
-} from "lucide-react";
+import { Heart, Mail, Minus, Plus, Search, Star } from "lucide-react";
 import Breadcrumb from "../layout/Breadcrumb";
 import NFTCarousel from "./NFTCarousel";
 import ImageBox from "./ImageBox";
@@ -55,21 +46,31 @@ export default function NFTDetailDesktop() {
 
   const url = typeof window === "undefined" ? "" : window.location.href;
   const share = [
-    [
-      "LinkedIn",
-      Linkedin,
-      `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`,
-    ],
-    [
-      "E-mail",
-      Mail,
-      `mailto:?subject=${encodeURIComponent(nft.name)}&body=${encodeURIComponent(url)}`,
-    ],
-    [
-      "Twitter",
-      Twitter,
-      `https://twitter.com/intent/tweet?url=${encodeURIComponent(url)}&text=${encodeURIComponent(nft.name)}`,
-    ],
+    {
+      name: "LinkedIn",
+      href: `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`,
+      icon: (
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z" />
+          <rect x="2" y="9" width="4" height="12" />
+          <circle cx="4" cy="4" r="2" />
+        </svg>
+      ),
+    },
+    {
+      name: "E-mail",
+      href: `mailto:?subject=${encodeURIComponent(nft.name)}&body=${encodeURIComponent(url)}`,
+      icon: <Mail size={16} />,
+    },
+    {
+      name: "Twitter",
+      href: `https://twitter.com/intent/tweet?url=${encodeURIComponent(url)}&text=${encodeURIComponent(nft.name)}`,
+      icon: (
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.73-8.835L1.254 2.25H8.08l4.253 5.622 5.911-5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+        </svg>
+      ),
+    },
   ] as const;
 
   const buy = async () => {
@@ -238,7 +239,7 @@ export default function NFTDetailDesktop() {
           </ul>
           <div className="flex items-center gap-2 text-[14px] font-bold text-foreground">
             Compartilhar este NFT:
-            {share.map(([name, Icon, href]) => (
+            {share.map(({ name, href, icon }) => (
               <a
                 key={name}
                 href={href}
@@ -247,7 +248,7 @@ export default function NFTDetailDesktop() {
                 aria-label={`Compartilhar no ${name}`}
                 className="rounded outline-none focus-visible:ring-2 focus-visible:ring-primary"
               >
-                <Icon size={16} />
+                {icon}
               </a>
             ))}
           </div>
