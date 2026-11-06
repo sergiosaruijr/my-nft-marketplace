@@ -8,9 +8,19 @@ import type {
   Wallet,
   WalletInput,
 } from "../../types";
+import { keepPreviousData } from "@tanstack/react-query";
+import type { NftListParams, NftPage } from "../../types";
 
 export const cartKey = ["cart"] as const;
 export const walletsKey = ["wallets"] as const;
+
+export const useNfts = (params: NftListParams) =>
+  useQuery({
+    queryKey: ["nfts", params],
+    queryFn: ({ signal }) =>
+      api.get<NftPage>("/nfts", { params, signal }).then((r) => r.data),
+    placeholderData: keepPreviousData,
+  });
 
 export const useCart = () =>
   useQuery({

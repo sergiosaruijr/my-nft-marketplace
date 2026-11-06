@@ -1,11 +1,25 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
 import { api } from "../../lib/api";
-import { clearToken, setToken } from "../../lib/session";
+import {
+  clearToken,
+  setToken,
+  clearGuestId,
+  getToken,
+} from "../../lib/session";
 import type { AuthResponse } from "../../types";
-import { sessionKey } from "./session";
+import { sessionKey, fetchSession } from "./session";
 
 type LoginBody = { email: string; password: string };
 type SignupBody = LoginBody & { username: string };
+
+export const useSession = () =>
+  useQuery({
+    queryKey: sessionKey,
+    queryFn: fetchSession,
+    enabled: !!getToken(),
+    staleTime: 60_000,
+    retry: false,
+  });
 
 function useAuthMutation<T>(path: string) {
   const qc = useQueryClient();
@@ -15,6 +29,7 @@ function useAuthMutation<T>(path: string) {
     onSuccess: ({ token, user }) => {
       qc.clear();
       setToken(token);
+      clearGuestId();
       qc.setQueryData(sessionKey, user);
     },
   });

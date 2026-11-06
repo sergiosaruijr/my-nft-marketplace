@@ -1,6 +1,114 @@
+// import type { NFT } from "../types";
+
+// const BASE_NFTS: Omit<NFT, "category" | "network">[] = [
+//   {
+//     id: "1",
+//     name: "Emerald Ape #042",
+//     price: "1.19",
+//     image: "/img/EmeraldApe.svg",
+//     description:
+//       "Um colecionável digital 1/50 finalizado à mão da coleção Kurio Editions, verificado na Ethereum.",
+//     edition: "1/50",
+//     available: 10,
+//     tokenId: "#0042",
+//     collection: "Kurio Apes",
+//     attributes: ["Óculos", "Esmeralda", "Raro"],
+//     rating: 4.8,
+//     reviews: 19,
+//   },
+//   {
+//     id: "2",
+//     name: "Violet Nomad #009",
+//     price: "1.69",
+//     image: "/img/VioletNomad.svg",
+//     description: "Violet Nomad, vibe urbana.",
+//     edition: "1/10",
+//     available: 5,
+//     tokenId: "#0009",
+//     collection: "Kurio Nomads",
+//     attributes: ["Capuz", "Violet", "Urbano"],
+//     rating: 4.7,
+//     reviews: 12,
+//   },
+//   {
+//     id: "3",
+//     name: "Dark Baron #017",
+//     price: "2.50",
+//     image: "/img/IvoryBaron.svg",
+//     rare: true,
+//     description: "Edição rara com traits exclusivos.",
+//     edition: "1/5",
+//     available: 3,
+//     tokenId: "#0017",
+//     collection: "Kurio Legends",
+//     attributes: ["Barão", "Ivory", "Raro"],
+//     rating: 5.0,
+//     reviews: 8,
+//   },
+//   {
+//     id: "4",
+//     name: "Golden Beats #031",
+//     price: "1.89",
+//     image: "/img/GoldenBeat.svg",
+//     description: "Beats e arte sonora.",
+//     edition: "1/25",
+//     available: 10,
+//     tokenId: "#0031",
+//     collection: "Kurio Sounds",
+//     attributes: ["Laranja", "Música", "Digital"],
+//     rating: 4.6,
+//     reviews: 15,
+//   },
+//   //Verificar o nome dos outros
+//   // {
+//   //   id: "5",
+//   //   name: "Violet Nomad #314",
+//   //   price: "1.39",
+//   //   image: null,
+//   //   description: "Violet Nomad, edição única.",
+//   //   edition: "1/1",
+//   //   available: 1,
+//   //   tokenId: "#0314",
+//   //   collection: "Kurio Nomads",
+//   //   attributes: ["Capuz", "Violeta", "Único"],
+//   //   rating: 4.9,
+//   //   reviews: 6,
+//   // },
+//   // {
+//   //   id: "6",
+//   //   name: "Ivory Baron #088",
+//   //   price: "1.79",
+//   //   image: null,
+//   //   description: "Ivory Baron, traje claro.",
+//   //   edition: "1/10",
+//   //   available: 10,
+//   //   tokenId: "#0088",
+//   //   collection: "Kurio Legends",
+//   //   attributes: ["Barão", "Marfim", "Claro"],
+//   //   rating: 4.5,
+//   //   reviews: 10,
+//   // },
+//   // {
+//   //   id: "7",
+//   //   name: "Golden Beat #207",
+//   //   price: "0.99",
+//   //   image: null,
+//   //   description: "Golden Beat, fones dourados.",
+//   //   edition: "1/50",
+//   //   available: 10,
+//   //   tokenId: "#0207",
+//   //   collection: "Kurio Sounds",
+//   //   attributes: ["Dourado", "Música", "Digital"],
+//   //   rating: 4.4,
+//   //   reviews: 22,
+//   // },
+// ];
+
+// export default BASE_NFTS;
+
 import type { NFT } from "../types";
 
-export const NFTS: NFT[] = [
+const BASE_NFTS: Omit<NFT, "category" | "network">[] = [
   {
     id: "1",
     name: "Emerald Ape #042",
@@ -59,47 +167,72 @@ export const NFTS: NFT[] = [
     rating: 4.6,
     reviews: 15,
   },
-  //Verificar o nome dos outros
-  // {
-  //   id: "5",
-  //   name: "Violet Nomad #314",
-  //   price: "1.39",
-  //   image: null,
-  //   description: "Violet Nomad, edição única.",
-  //   edition: "1/1",
-  //   available: 1,
-  //   tokenId: "#0314",
-  //   collection: "Kurio Nomads",
-  //   attributes: ["Capuz", "Violeta", "Único"],
-  //   rating: 4.9,
-  //   reviews: 6,
-  // },
-  // {
-  //   id: "6",
-  //   name: "Ivory Baron #088",
-  //   price: "1.79",
-  //   image: null,
-  //   description: "Ivory Baron, traje claro.",
-  //   edition: "1/10",
-  //   available: 10,
-  //   tokenId: "#0088",
-  //   collection: "Kurio Legends",
-  //   attributes: ["Barão", "Marfim", "Claro"],
-  //   rating: 4.5,
-  //   reviews: 10,
-  // },
-  // {
-  //   id: "7",
-  //   name: "Golden Beat #207",
-  //   price: "0.99",
-  //   image: null,
-  //   description: "Golden Beat, fones dourados.",
-  //   edition: "1/50",
-  //   available: 10,
-  //   tokenId: "#0207",
-  //   collection: "Kurio Sounds",
-  //   attributes: ["Dourado", "Música", "Digital"],
-  //   rating: 4.4,
-  //   reviews: 22,
-  // },
+];
+
+const CATS = [
+  "Arte digital",
+  "Fotografia",
+  "Música",
+  "Arte 3D",
+  "Colecionáveis",
+  "Generativa",
+  "Jogos",
+  "Assinaturas",
+  "Utilidade",
+];
+const NETS = ["ethereum", "polygon", "solana"] as const;
+const ADJ = [
+  "Emerald",
+  "Violet",
+  "Ivory",
+  "Golden",
+  "Cosmic",
+  "Neon",
+  "Sage",
+  "Dark",
+  "Orange",
+  "Crimson",
+  "Azure",
+  "Amber",
+];
+const NOUN = [
+  "Ape",
+  "Nomad",
+  "Baron",
+  "Beat",
+  "Bloom",
+  "Vessel",
+  "Signal",
+  "Drift",
+];
+const EDS = ["1/1", "1/10", "1/50"];
+
+const GENERATED: NFT[] = Array.from({ length: 33 }, (_, i) => {
+  const num = 100 + i * 7;
+  const edition = EDS[i % 3];
+  return {
+    id: String(i + 5), // começa em 5 porque BASE tem 4 itens ativos (1-4)
+    name: `${ADJ[i % 12]} ${NOUN[(i * 5) % 8]} #${String(num).padStart(3, "0")}`,
+    price: (0.2 + ((i * 37) % 230) / 100).toFixed(2),
+    edition,
+    available: edition === "1/1" ? 1 : edition === "1/10" ? 5 : 10,
+    category: CATS[(i + 3) % 9],
+    network: NETS[(i + 1) % 3],
+    rare: i % 6 === 0,
+    description: "Colecionável digital da coleção Kurio Editions.",
+    rating: 4 + (i % 10) / 10,
+    reviews: 5 + i,
+    tokenId: `#${String(num).padStart(4, "0")}`,
+    collection: "Kurio Apes",
+    attributes: ["Raro"],
+  };
+});
+
+export const NFTS: NFT[] = [
+  ...BASE_NFTS.map((n, i) => ({
+    ...n,
+    category: CATS[i % 9],
+    network: NETS[i % 3],
+  })),
+  ...GENERATED,
 ];

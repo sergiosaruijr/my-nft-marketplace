@@ -10,6 +10,7 @@ export type DB = {
   wallets: Record<string, Wallet[]>;
   orders: Record<string, StoredOrder>;
   idem: Record<string, { hash: string; orderId: string }>;
+  favorites: Record<string, string[]>;
 };
 const KEY = "kurio.mock.db";
 let cache: DB | null = null;
@@ -78,6 +79,7 @@ async function seed(): Promise<DB> {
     },
     orders: {},
     idem: {},
+    favorites: { u1: ["2"] },
   };
 }
 

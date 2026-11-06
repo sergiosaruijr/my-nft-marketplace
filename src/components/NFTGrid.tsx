@@ -1,8 +1,8 @@
 import { useSearch } from "@tanstack/react-router";
 import { NFTCard } from "./NFTCard";
 import Pagination from "./Pagination";
-import { NFTS } from "../data/nfts";
 import { pageCount, pageOf, sortNfts } from "../lib/catalog";
+import { NFTS } from "../data/nfts";
 
 function NFTGrid() {
   const { tab, page } = useSearch({ from: "/" });

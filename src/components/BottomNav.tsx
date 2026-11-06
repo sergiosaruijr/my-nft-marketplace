@@ -22,9 +22,18 @@ function BottomNav() {
             />
           )}
         </Link>
-        <button aria-label="Favoritos" className={base}>
+        {/* <button aria-label="Favoritos" className={base}>
           <Heart size={22} fill="currentColor" className="text-secondary" />
-        </button>
+        </button> */}
+        <Link to={"/favorites" as any} aria-label="Favoritos" className={base}>
+          {({ isActive }) => (
+            <Heart
+              size={22}
+              fill="currentColor"
+              className={isActive ? "text-primary" : "text-secondary"}
+            />
+          )}
+        </Link>
       </div>
 
       {/* centro */}

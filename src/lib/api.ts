@@ -1,16 +1,16 @@
 import axios from "axios";
-import { getToken, SESSION_EXPIRED } from "./session";
+import { getGuestId, getToken, SESSION_EXPIRED } from "./session";
 
 export const api = axios.create({ baseURL: "/api", timeout: 10_000 });
 
 api.interceptors.request.use((cfg) => {
   const token = getToken();
   if (token) cfg.headers.Authorization = `Bearer ${token}`;
+  else cfg.headers["X-Guest-Id"] = getGuestId();
   return cfg;
 });
 
 api.interceptors.response.use(undefined, (err) => {
-  // 401 com token fora do login = sessão expirada
   if (
     err.response?.status === 401 &&
     getToken() &&

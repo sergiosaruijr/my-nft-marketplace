@@ -1,40 +1,42 @@
 import { http, HttpResponse, delay } from "msw";
 import Decimal from "decimal.js";
 import { NFTS } from "../data/nfts";
-import { getDb, saveDb, type DB, type StoredOrder } from "./db";
-import type { Cart, Order, Provider, Wallet } from "../types";
+import { saveDb, type DB, type StoredOrder } from "./db";
+import type { Cart, NFT, Order, Provider, Wallet } from "../types";
+import { authed, owned, err } from "./route";
+import { getScenario } from "./scenarios";
 
-type Ctx = {
-  uid: string;
-  db: DB;
-  request: Request;
-  params: Record<string, string>;
-};
+// type Ctx = {
+//   uid: string;
+//   db: DB;
+//   request: Request;
+//   params: Record<string, string>;
+// };
 
-const authed =
-  (fn: (c: Ctx) => Response | Promise<Response>) =>
-  async ({
-    request,
-    params,
-  }: {
-    request: Request;
-    params: Record<string, unknown>;
-  }) => {
-    await delay(250);
-    const db = await getDb();
-    const token = request.headers.get("Authorization")?.replace("Bearer ", "");
-    const uid = token ? db.sessions[token] : undefined;
-    if (!uid)
-      return HttpResponse.json({ error: "session_invalid" }, { status: 401 });
-    return fn({ uid, db, request, params: params as Record<string, string> });
-  };
+// const owned =
+//   (fn: (c: Ctx) => Response | Promise<Response>) =>
+//   async ({
+//     request,
+//     params,
+//   }: {
+//     request: Request;
+//     params: Record<string, unknown>;
+//   }) => {
+//     await delay(250);
+//     const db = await getDb();
+//     const token = request.headers.get("Authorization")?.replace("Bearer ", "");
+//     const uid = token ? db.sessions[token] : undefined;
+//     if (!uid)
+//       return HttpResponse.json({ error: "session_invalid" }, { status: 401 });
+//     return fn({ uid, db, request, params: params as Record<string, string> });
+//   };
 
-const err = (
-  status: number,
-  error: string,
-  message: string,
-  extra: object = {},
-) => HttpResponse.json({ error, message, ...extra }, { status });
+// const err = (
+//   status: number,
+//   error: string,
+//   message: string,
+//   extra: object = {},
+// ) => HttpResponse.json({ error, message, ...extra }, { status });
 
 const COUPONS: Record<string, string> = { KURIO5: "0.50" };
 const EXPIRED = ["LANCAMENTO"];
@@ -73,12 +75,12 @@ const publicOrder = ({ userId: _, ...o }: StoredOrder): Order => o;
 export const shopHandlers = [
   http.get(
     "*/api/cart",
-    authed(({ uid, db }) => HttpResponse.json(buildCart(db, uid))),
+    owned(({ uid, db }) => HttpResponse.json(buildCart(db, uid))),
   ),
 
   http.post(
     "*/api/cart/items",
-    authed(async ({ uid, db, request }) => {
+    owned(async ({ uid, db, request }) => {
       const { nftId, qty = 1 } = (await request.json()) as {
         nftId: string;
         qty?: number;
@@ -103,7 +105,7 @@ export const shopHandlers = [
 
   http.put(
     "*/api/cart/items/:nftId",
-    authed(async ({ uid, db, request, params }) => {
+    owned(async ({ uid, db, request, params }) => {
       const { qty } = (await request.json()) as { qty: number };
       const nft = NFTS.find((n) => n.id === params.nftId);
       const line = db.carts[uid]?.find((l) => l.nftId === params.nftId);
@@ -125,7 +127,7 @@ export const shopHandlers = [
 
   http.delete(
     "*/api/cart/items/:nftId",
-    authed(({ uid, db, params }) => {
+    owned(({ uid, db, params }) => {
       db.carts[uid] = (db.carts[uid] ?? []).filter(
         (l) => l.nftId !== params.nftId,
       );
@@ -136,7 +138,7 @@ export const shopHandlers = [
 
   http.put(
     "*/api/cart/coupon",
-    authed(async ({ uid, db, request }) => {
+    owned(async ({ uid, db, request }) => {
       const code = String(
         ((await request.json()) as { code?: string }).code ?? "",
       )
@@ -153,7 +155,7 @@ export const shopHandlers = [
 
   http.delete(
     "*/api/cart/coupon",
-    authed(({ uid, db }) => {
+    owned(({ uid, db }) => {
       db.coupons[uid] = null;
       saveDb();
       return HttpResponse.json(buildCart(db, uid));
@@ -162,7 +164,7 @@ export const shopHandlers = [
 
   http.get(
     "*/api/wallets",
-    authed(({ uid, db }) => HttpResponse.json(db.wallets[uid] ?? [])),
+    owned(({ uid, db }) => HttpResponse.json(db.wallets[uid] ?? [])),
   ),
 
   http.put(
@@ -206,7 +208,7 @@ export const shopHandlers = [
 
   http.post(
     "*/api/orders",
-    authed(async ({ uid, db, request }) => {
+    owned(async ({ uid, db, request }) => {
       const key = request.headers.get("Idempotency-Key");
       if (!key)
         return err(400, "missing_key", "Chave de idempotência ausente.");
@@ -260,6 +262,7 @@ export const shopHandlers = [
       db.orders[order.id] = order;
       db.idem[key] = { hash, orderId: order.id };
       saveDb();
+      if (getScenario().orderTimeout) return delay("infinite") as never;
       return HttpResponse.json(publicOrder(order), { status: 201 });
     }),
   ),
@@ -270,23 +273,78 @@ export const shopHandlers = [
       const o = db.orders[params.id];
       if (!o || o.userId !== uid)
         return err(404, "not_found", "Pedido não encontrado.");
+      // if (
+      //   o.status === "pending" &&
+      //   Date.now() - Date.parse(o.createdAt) > 2500
+      // ) {
+      //   o.status = "confirmed";
+      //   o.version++;
+
+      //   db.carts[uid] = (db.carts[uid] ?? [])
+      //     .map((l) => {
+      //       const b = o.items.find((i) => i.nftId === l.nftId);
+      //       return b ? { ...l, qty: l.qty - b.qty } : l;
+      //     })
+      //     .filter((l) => l.qty > 0);
+      //   db.coupons[uid] = null;
+      //   saveDb();
+      // }
       if (
         o.status === "pending" &&
         Date.now() - Date.parse(o.createdAt) > 2500
       ) {
-        o.status = "confirmed";
+        // usa o cenário para decidir o resultado
+        o.status =
+          getScenario().payment === "reject" ? "rejected" : "confirmed";
         o.version++;
 
-        db.carts[uid] = (db.carts[uid] ?? [])
-          .map((l) => {
-            const b = o.items.find((i) => i.nftId === l.nftId);
-            return b ? { ...l, qty: l.qty - b.qty } : l;
-          })
-          .filter((l) => l.qty > 0);
-        db.coupons[uid] = null;
+        // limpa o carrinho apenas se confirmou
+        if (o.status === "confirmed") {
+          db.carts[uid] = (db.carts[uid] ?? [])
+            .map((l) => {
+              const b = o.items.find((i) => i.nftId === l.nftId);
+              return b ? { ...l, qty: l.qty - b.qty } : l;
+            })
+            .filter((l) => l.qty > 0);
+          db.coupons[uid] = null;
+        }
         saveDb();
       }
       return HttpResponse.json(publicOrder(o));
+    }),
+  ),
+  http.get(
+    "*/api/favorites",
+    authed(({ uid, db }) =>
+      HttpResponse.json(
+        (db.favorites[uid] ?? [])
+          .map((id) => NFTS.find((n) => n.id === id))
+          .filter((n): n is NFT => n !== undefined),
+      ),
+    ),
+  ),
+
+  http.put(
+    "*/api/favorites/:nftId",
+    authed(({ uid, db, params }) => {
+      if (!NFTS.some((n) => n.id === params.nftId))
+        return err(404, "not_found", "NFT não encontrado.");
+      const list = (db.favorites[uid] ??= []);
+      if (!list.includes(params.nftId)) list.unshift(params.nftId); // idempotente
+      saveDb();
+      return new HttpResponse(null, { status: 204 });
+    }),
+  ),
+
+  http.delete(
+    "*/api/favorites/:nftId",
+    authed(({ uid, db, params }) => {
+      db.favorites[uid] = (db.favorites[uid] ?? []).filter(
+        (id) => id !== params.nftId,
+      );
+      saveDb();
+      // if (getScenario().orderTimeout) return delay("infinite") as never;
+      return new HttpResponse(null, { status: 204 });
     }),
   ),
 ];

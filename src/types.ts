@@ -13,6 +13,8 @@ export type NFT = {
   rating?: number;
   reviews?: number;
   createdAt?: string;
+  category: string;
+  network: "ethereum" | "polygon" | "solana" | "base";
 };
 
 // export type User = { id: string; username: string; email: string };
@@ -76,4 +78,26 @@ export type Order = {
   networkFee: string;
   total: string;
   version: number;
+};
+
+export type NftListParams = {
+  q?: string;
+  category?: string;
+  network?: string;
+  min?: string;
+  max?: string;
+  sort?: "recent" | "price_asc" | "price_desc";
+  tab?: "all" | "new" | "trending";
+  page: number;
+};
+export type NftPage = {
+  items: NFT[];
+  page: number;
+  pageSize: number;
+  total: number;
+  totalPages: number;
+  facets: {
+    categories: Record<string, number>;
+    networks: Record<string, number>;
+  };
 };
