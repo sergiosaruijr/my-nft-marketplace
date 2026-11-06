@@ -3,8 +3,12 @@
 Desafio Frontend: marketplace de NFTs em React + TypeScript, com API, autenticação, carteiras e pagamentos **simulados** (MSW).
 
 - **Aplicação publicada:** https://my-nft-marketplace-beige.vercel.app/
+<<<<<<< HEAD
 - **Repositório:** `<https://github.com/sergiosaruijr/my-nft-marketplace>`
 - **Commit publicado:** `<hash do commit que está na Vercel>`
+=======
+- **Repositório:** `https://github.com/sergiosaruijr/my-nft-marketplace`
+>>>>>>> 5955aba74e5ead35b1201900ba1ab439dd59e771
 - **Arquitetura, contratos e decisões:** [ARCHITECTURE.md](./ARCHITECTURE.md)
 
 ## Stack
