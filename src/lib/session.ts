@@ -1,37 +1,42 @@
-// const KEY = "kurio.token";
-// export const SESSION_EXPIRED = "kurio:session-expired";
+import { useSyncExternalStore } from "react";
 
-// export const getToken = () => localStorage.getItem(KEY);
-// export const setToken = (t: string) => localStorage.setItem(KEY, t);
-// export const clearToken = () => localStorage.removeItem(KEY);
+const KEY = "kurio.token";
+const GUEST = "kurio.guest";
+export const SESSION_EXPIRED = "kurio:session-expired";
 
-const TOKEN_KEY = "kurio:token";
+const listeners = new Set<() => void>();
+const emit = () => listeners.forEach((l) => l());
+window.addEventListener("storage", emit); // outras abas
 
+export const getToken = () => localStorage.getItem(KEY);
 export const setToken = (t: string) => {
-  localStorage.setItem(TOKEN_KEY, t);
+  localStorage.setItem(KEY, t);
+  emit();
+};
+export const clearToken = () => {
+  localStorage.removeItem(KEY);
+  emit();
 };
 
-export const getToken = (): string | null => {
-  try {
-    return localStorage.getItem(TOKEN_KEY);
-  } catch {
-    return null;
-  }
-};
-
-export const clearToken = () => localStorage.removeItem(TOKEN_KEY);
-
-export const SESSION_EXPIRED = "kurio:session_expired";
-
-export const safeRedirect = (p?: string) =>
-  p && p.startsWith("/") && !p.startsWith("//") ? p : "/";
+export const useToken = () =>
+  useSyncExternalStore(
+    (cb) => {
+      listeners.add(cb);
+      return () => listeners.delete(cb);
+    },
+    getToken,
+    () => null,
+  );
 
 export const getGuestId = () => {
-  let id = localStorage.getItem(TOKEN_KEY);
+  let id = localStorage.getItem(GUEST);
   if (!id) {
     id = crypto.randomUUID();
-    localStorage.setItem(TOKEN_KEY, id);
+    localStorage.setItem(GUEST, id);
   }
   return id;
 };
-export const clearGuestId = () => localStorage.removeItem(TOKEN_KEY);
+export const clearGuestId = () => localStorage.removeItem(GUEST);
+
+export const safeRedirect = (p?: string) =>
+  p && p.startsWith("/") && !p.startsWith("//") ? p : "/";

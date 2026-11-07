@@ -4,15 +4,18 @@ export type StoredUser = User & { passwordHash: string };
 export type StoredOrder = Order & { userId: string };
 export type DB = {
   users: StoredUser[];
-  sessions: Record<string, string>;
   carts: Record<string, { nftId: string; qty: number }[]>;
   coupons: Record<string, string | null>;
   wallets: Record<string, Wallet[]>;
+  favorites: Record<string, string[]>;
   orders: Record<string, StoredOrder>;
   idem: Record<string, { hash: string; orderId: string }>;
 };
+
 const KEY = "kurio.mock.db";
+const SESSIONS = "kurio.mock.sessions";
 let cache: DB | null = null;
+let loading: Promise<DB> | null = null;
 
 export async function sha256(s: string) {
   const buf = await crypto.subtle.digest(
@@ -36,8 +39,6 @@ async function seed(): Promise<DB> {
       { id: "u1", username: "ana", email: "ana@kurio.com", passwordHash },
       { id: "u2", username: "bruno", email: "bruno@kurio.com", passwordHash },
     ],
-    sessions: {},
-
     carts: {
       u1: [
         { nftId: "1", qty: 1 },
@@ -47,6 +48,7 @@ async function seed(): Promise<DB> {
       ],
     },
     coupons: {},
+    favorites: { u1: ["2"] },
     wallets: {
       u1: [
         {
@@ -81,16 +83,44 @@ async function seed(): Promise<DB> {
   };
 }
 
-export async function getDb() {
-  if (cache) return cache;
+async function load(): Promise<DB> {
   const raw = localStorage.getItem(KEY);
   const base = await seed();
-  cache = raw ? ({ ...base, ...JSON.parse(raw) } as DB) : base; // bancos antigos ganham os campos novos
+  cache = raw ? ({ ...base, ...JSON.parse(raw) } as DB) : base;
   return cache;
 }
+
+export const getDb = () => (loading ??= load());
 export const saveDb = () =>
   cache && localStorage.setItem(KEY, JSON.stringify(cache));
+
 export async function resetDb() {
   cache = await seed();
+  loading = Promise.resolve(cache);
+  localStorage.removeItem(SESSIONS);
   saveDb();
+}
+
+const readSessions = (): Record<string, string> => {
+  try {
+    return JSON.parse(localStorage.getItem(SESSIONS) ?? "{}");
+  } catch {
+    return {};
+  }
+};
+export function createSession(userId: string) {
+  const token = crypto.randomUUID();
+  localStorage.setItem(
+    SESSIONS,
+    JSON.stringify({ ...readSessions(), [token]: userId }),
+  );
+  return token;
+}
+export const userIdFromToken = (token?: string | null) =>
+  token ? readSessions()[token] : undefined;
+export function destroySession(token?: string | null) {
+  if (!token) return;
+  const s = readSessions();
+  delete s[token];
+  localStorage.setItem(SESSIONS, JSON.stringify(s));
 }

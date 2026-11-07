@@ -6,18 +6,13 @@ export const api = axios.create({ baseURL: "/api", timeout: 10_000 });
 api.interceptors.request.use((cfg) => {
   const token = getToken();
   if (token) cfg.headers.Authorization = `Bearer ${token}`;
-  else cfg.headers["X-Guest-Id"] = getGuestId();
+  else cfg.headers["X-Guest-Id"] = getGuestId(); // visitante (inclusive no login, para mesclar o carrinho)
   return cfg;
 });
 
 api.interceptors.response.use(undefined, (err) => {
-  // 401 com token fora do login = sessão expirada
-  if (
-    err.response?.status === 401 &&
-    getToken() &&
-    !err.config?.url?.startsWith("/auth/login")
-  ) {
+  const url: string = err.config?.url ?? "";
+  if (err.response?.status === 401 && getToken() && !url.startsWith("/auth/"))
     window.dispatchEvent(new Event(SESSION_EXPIRED));
-  }
   return Promise.reject(err);
 });

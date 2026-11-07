@@ -3,7 +3,6 @@ import { Search, SlidersHorizontal } from "lucide-react";
 function SearchBar() {
   return (
     <div className="flex items-center gap-3 pt-10">
-      {/* busca: fundo surface-card */}
       <div className="flex flex-1 items-center gap-3 h-[45px] rounded-2xl px-4 bg-[#241612]">
         <Search
           size={20}

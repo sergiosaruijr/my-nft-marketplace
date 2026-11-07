@@ -1,7 +1,13 @@
 import { http, HttpResponse, delay } from "msw";
 import Decimal from "decimal.js";
 import { NFTS } from "../data/nfts";
-import { getDb, saveDb, type DB, type StoredOrder } from "./db";
+import {
+  getDb,
+  saveDb,
+  type DB,
+  type StoredOrder,
+  userIdFromToken,
+} from "./db";
 import type { Cart, Order, Provider, Wallet } from "../types";
 
 type Ctx = {
@@ -23,7 +29,7 @@ const authed =
     await delay(250);
     const db = await getDb();
     const token = request.headers.get("Authorization")?.replace("Bearer ", "");
-    const uid = token ? db.sessions[token] : undefined;
+    const uid = token ? userIdFromToken(token) : undefined;
     if (!uid)
       return HttpResponse.json({ error: "session_invalid" }, { status: 401 });
     return fn({ uid, db, request, params: params as Record<string, string> });

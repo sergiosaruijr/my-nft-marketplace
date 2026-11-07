@@ -41,8 +41,21 @@ export default function ProfileSidebar() {
           </Link>
         </li>
         <li>
-          <Link to={"/wallets" as any} activeProps={{ className: active }}>
+          <Link
+            to={"/wallets" as any}
+            activeProps={{ className: active }}
+            className={item}
+          >
             <MapPin size={18} /> Carteiras
+          </Link>
+        </li>
+        <li>
+          <Link
+            to={"/favorites" as any}
+            activeProps={{ className: active }}
+            className={item}
+          >
+            <Heart size={18} /> Lista de interesse
           </Link>
         </li>
         {soon.map(({ label, Icon }) => (

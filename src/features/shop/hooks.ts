@@ -105,7 +105,7 @@
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { api } from "../../lib/api";
-import { getToken } from "../../lib/session";
+// import { getToken } from "../../lib/session";
 import type {
   Cart,
   NFT,
@@ -115,20 +115,18 @@ import type {
   WalletInput,
 } from "../../types";
 
-// chaves
 export const cartKey = ["cart"] as const;
 export const walletsKey = ["wallets"] as const;
+export const favorites = ["favorites"] as const;
 
-// useCart com generics explícitos e enabled para evitar fetch sem token
 export const useCart = () =>
   useQuery<Cart, Error>({
     queryKey: cartKey,
-    enabled: !!getToken(),
+
     queryFn: ({ signal }) =>
       api.get<Cart>("/cart", { signal }).then((r) => r.data),
   });
 
-// helper genérico para mutações que invalidam o cart
 function useCartMutation<V, TError = unknown>(fn: (v: V) => Promise<unknown>) {
   const qc = useQueryClient();
   return useMutation<unknown, TError, V>({
@@ -177,7 +175,6 @@ export function useSaveWallet() {
   });
 }
 
-// orders
 export const useCreateOrder = () =>
   useMutation<
     Order,

@@ -5,7 +5,6 @@ import type { User } from "../types";
 import { UserIcon } from "lucide-react";
 
 export default function HeaderAccount() {
-  // só lê o cache preenchido pelo login/getSession (Verificar se faz sentido)
   const { data: user } = useQuery<User | null>({
     queryKey: sessionKey,
     queryFn: skipToken,

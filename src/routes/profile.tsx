@@ -6,6 +6,7 @@ import ProfileSidebar from "../components/desktop/ProfileSideBar";
 import AvatarField from "../features/profile/AvatarField";
 import { sessionKey } from "../features/auth/session";
 import type { User } from "../types";
+import { useNavigate } from "@tanstack/react-router";
 
 const input =
   "h-10 w-full border border-primary/40 bg-ink px-3 text-foreground outline-none focus-visible:ring-2 focus-visible:ring-primary";
@@ -53,6 +54,8 @@ function Field({
 }
 
 export default function ProfilePage() {
+  const navigate = useNavigate();
+
   const { data: user } = useQuery<User | null>({
     queryKey: sessionKey,
     queryFn: skipToken,
@@ -92,12 +95,21 @@ export default function ProfilePage() {
               <Field label="Confirmar nova senha" type="password" />
             </div>
 
-            <button
-              type="submit"
-              className="mt-8 h-10 bg-primary px-8 font-bold text-ink hover:bg-primary-light"
-            >
-              Salvar
-            </button>
+            <div className="flex justify-between">
+              <button
+                type="submit"
+                className="mt-8 h-10 bg-primary px-8 font-bold text-ink hover:bg-primary-light"
+              >
+                Salvar
+              </button>
+              <button
+                type="button"
+                onClick={() => navigate("/home" as any)}
+                className="mt-8 h-10 bg-gray-400 px-8 font-bold text-ink hover:bg-primary-light"
+              >
+                Voltar
+              </button>
+            </div>
           </form>
         </main>
       </div>

@@ -1,5 +1,14 @@
 import { http, HttpResponse, delay } from "msw";
-import { getDb, saveDb, sha256, type StoredUser } from "./db";
+import {
+  getDb,
+  saveDb,
+  sha256,
+  createSession,
+  userIdFromToken,
+  destroySession,
+  type StoredUser,
+} from "./db";
+import { mergeGuestCart } from "./guest";
 
 const pub = ({ passwordHash: _, ...u }: StoredUser) => u;
 const emailOk = (s: string) => /^\S+@\S+\.\S+$/.test(s);
@@ -43,9 +52,8 @@ export const authHandlers = [
       email,
       passwordHash: await sha256(b.password!),
     };
-    const token = crypto.randomUUID();
+    const token = createSession(user.id);
     db.users.push(user);
-    db.sessions[token] = user.id;
     saveDb();
     return HttpResponse.json({ token, user: pub(user) }, { status: 201 });
   }),
@@ -63,8 +71,8 @@ export const authHandlers = [
         },
         { status: 401 },
       );
-    const token = crypto.randomUUID();
-    db.sessions[token] = user.id;
+    const token = createSession(user.id);
+    mergeGuestCart(db, user.id, request.headers.get("X-Guest-Id"));
     saveDb();
     return HttpResponse.json({ token, user: pub(user) });
   }),
@@ -72,7 +80,8 @@ export const authHandlers = [
   http.get("*/api/auth/session", async ({ request }) => {
     const token = request.headers.get("Authorization")?.replace("Bearer ", "");
     const db = await getDb();
-    const user = token && db.users.find((u) => u.id === db.sessions[token]);
+    const uid = token ? userIdFromToken(token) : undefined; // CHANGED
+    const user = uid && db.users.find((u) => u.id === uid);
     if (!user)
       return HttpResponse.json({ error: "session_invalid" }, { status: 401 });
     return HttpResponse.json({ user: pub(user) });
@@ -80,9 +89,7 @@ export const authHandlers = [
 
   http.post("*/api/auth/logout", async ({ request }) => {
     const token = request.headers.get("Authorization")?.replace("Bearer ", "");
-    const db = await getDb();
-    if (token) delete db.sessions[token];
-    saveDb();
+    if (token) destroySession(token);
     return new HttpResponse(null, { status: 204 });
   }),
 ];

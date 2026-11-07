@@ -14,7 +14,7 @@ export const useFavorites = () =>
     queryKey: favoritesKey,
     queryFn: ({ signal }) =>
       api.get<NFT[]>("/favorites", { signal }).then((r) => r.data),
-    enabled: !!getToken(), // visitante não tem favoritos
+    enabled: !!getToken(),
   });
 
 export function useToggleFavorite() {
@@ -33,7 +33,7 @@ export function useToggleFavorite() {
       );
       return { prev };
     },
-    // rollback se a API falhar
+
     onError: (_e, _v, ctx) => {
       if (ctx?.prev) qc.setQueryData(favoritesKey, ctx.prev);
       notify(
@@ -49,9 +49,10 @@ export function useFavoriteToggle(nft: NFT) {
   const { data: user } = useSession();
   const { data: favs } = useFavorites();
   const toggle = useToggleFavorite();
-  const active = !!favs?.some((n) => n.id === nft.id);
+
+  const active = Array.isArray(favs) && favs.some((n) => n.id === nft.id);
   const onClick = () => {
-    if (!user) return openAuthModal(router); // visitante: abre o login
+    if (!user) return openAuthModal(router);
     toggle.mutate({ nft, on: !active });
   };
   return { active, onClick };
